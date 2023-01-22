@@ -1,5 +1,6 @@
 import pandas as pd
-a='../da'
+
+
 def load_data(file_address='./data/processed.cleveland.data'):
     binary = pd.CategoricalDtype(categories=[0, 1])
     df = pd.read_csv(
