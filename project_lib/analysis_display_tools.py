@@ -1,3 +1,4 @@
+from typing import Iterable
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay
@@ -22,26 +23,32 @@ class AnalysisCurvesDisplay:
         return fig, (axlu, axru, axld, axrd)
         
         
-    def __init__(self,data:'pd.DataFrame', name='Classifier'):
-        if not {'prob', 'target'} <= set(data.columns):
-            raise ValueError("'prob' or 'target' columns does not exist")
+    def __init__(self,y_true:Iterable, prob_predict:Iterable, name='Classifier'):
+        y_true = np.array(y_true)
+        if set(y_true) != {0, 1}:
+            raise ValueError("`y_true` should be the only content of 1 and 0")
+            
+        prob_predict = np.array(prob_predict)
+        if np.any(prob_predict < 0) or np.any(prob_predict > 1):
+            raise ValueError("`prob_predict` should only contain numbers between 0 and 1")
             
         self.name = name
-        self.data = data
+        self.y_true = y_true
+        self.prob_predict = prob_predict
+        self.args = (y_true, prob_predict)
             
     def plot(self, ax_probability, ax_calib, ax_roc, ax_per_recall,
              **kwargs):
 
         self._plot_probability(ax_probability, **kwargs)
-        args = (self.data.target, self.data.prob)
         rcp = RocCurveDisplay.from_predictions(
-            *args, ax=ax_roc, name=self.name, **kwargs
+            *self.args, ax=ax_roc, name=self.name, **kwargs
         )
         prp = PrecisionRecallDisplay.from_predictions(
-            *args, ax=ax_per_recall, name=self.name, **kwargs
+            *self.args, ax=ax_per_recall, name=self.name, **kwargs
         )
         calp =  CalibrationDisplay.from_predictions(
-            *args, strategy='quantile', n_bins=23, ax=ax_calib,
+            *self.args, strategy='quantile', n_bins=11, ax=ax_calib,
             name=self.name, **kwargs
         )
         
@@ -50,8 +57,8 @@ class AnalysisCurvesDisplay:
         n = len(leg.get_texts()) if leg else 0
         assert n < 9, 'There are too many plots'
         ax.scatter(
-            x=self.data.prob,
-            y=np.array(self.data.target) + 0.1*n,
+            x=self.prob_predict,
+            y=self.y_true + 0.1*n,
             alpha=0.1,
             label=self.name,
             **kwargs
