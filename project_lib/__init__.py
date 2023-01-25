@@ -1,2 +1,2 @@
-from .data_loaders import load_data
+from .data_loaders import LoadData
 from .analysis_display_tools import AnalysisCurvesDisplay
