@@ -52,7 +52,7 @@ class AnalysisCurvesDisplay:
             name=self.name, **kwargs
         )
         
-    def _plot_probability(self, ax, **kwargs):
+    def _plot_probability(self, ax, extend_factor=0.1, **kwargs):
         leg = ax.get_legend()
         n = len(leg.get_texts()) if leg else 0
         assert n < 9, 'There are too many plots'
@@ -63,6 +63,8 @@ class AnalysisCurvesDisplay:
             label=self.name,
             **kwargs
         )
+        _, y1 = ax.get_ylim()
+        ax.set_ybound(None, y1 + extend_factor)
         ax.legend()
         
     
