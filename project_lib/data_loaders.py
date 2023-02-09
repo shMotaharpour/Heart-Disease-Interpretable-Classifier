@@ -30,4 +30,7 @@ class LoadData:
 
 
     def get_data_with_primary_features(self):
-        return self._data.get(['sex', 'cp', 'restecg', 'exang', 'ca', 'thal', 'target']).copy()
+        return (
+            self._data.get(['sex', 'cp', 'restecg', 'exang', 'ca', 'thal']).copy(),
+            self._data.get('target').copy()
+        )

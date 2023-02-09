@@ -46,3 +46,14 @@ this date. The "goal" field refers to the presence of heart disease in the patie
 
 ### Data types:
 The dataset columns have loading with specific categorical formats Based on Attributes Information. The written function is in `project_lib/data_loaders.py -> load_data`
+
+# Project's library
+The `project_lib` is a package that developed to simplify the process of discovery. It contains tools to train various models, then easily record and compare model's results.
+
+## BinaryClassificationModelsScoring class
+This class designed to keep candidates models results in side of capability to test multimodel in parallel discovery.
+A sample usage displayed in `autoscoringtable.ipynb` file.
+
+## AnalysisCurvesDisplay
+This class give capability to compare at most 10 models with side plots of Target Probability, Calibration Curve, ROC Curve and Precision-Recall Curve.
+A sample usage displayed in `AnalysisCurves example.ipynb` file.
