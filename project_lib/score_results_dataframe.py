@@ -107,3 +107,6 @@ class BinaryClassificationModelsScoring:
         if self._last_result is not None:
             name = new_name or self._last_result.index[0]
             self._df.loc[name, :] = self._last_result.iloc[0, :]
+
+    def save_table(self):
+        self._df.to_pickle(self.file_path)
