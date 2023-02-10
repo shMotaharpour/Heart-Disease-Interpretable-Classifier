@@ -100,10 +100,9 @@ class BinaryClassificationModelsScoring:
 
     @property
     def last_result(self) -> pd.DataFrame:
-        return (self._last_result.copy()
-                if self._last_result is not None
-                else self.new_frame()
-                )
+        if self._last_result is None:
+            self._last_result = self.new_frame()
+        return self._last_result.copy()
 
     @last_result.setter
     def last_result(self, other: pd.DataFrame):
