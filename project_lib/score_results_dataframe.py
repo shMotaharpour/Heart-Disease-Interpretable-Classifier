@@ -41,6 +41,7 @@ class BinaryClassificationModelsScoring:
 
     def __init__(self, table_name, *, directory='./ScoresTables'):
         self.table_name = table_name
+        self.directory = directory
         if table_name in self._instance:
             # Creates results dataframes as singleton
             self._df = self._instance[table_name]
@@ -49,8 +50,6 @@ class BinaryClassificationModelsScoring:
             if self.file_path.is_file():
                 self._df = self.read_frame()
             else:
-                Path(directory).mkdir(
-                    parents=True, exist_ok=True)
                 self._df = self.new_frame()
             self._instance[table_name] = self._df
 
@@ -76,7 +75,7 @@ class BinaryClassificationModelsScoring:
         return f"[{self.table_name}] scores table with {len(self._df)} records"
 
     def __del__(self):
-        self._df.to_pickle(self.file_path)
+        self.save_table()
 
     def train_and_scoring(self, model, model_name=''):
         model.fit(self.x_train, self.y_train)
@@ -109,4 +108,8 @@ class BinaryClassificationModelsScoring:
             self._df.loc[name, :] = self._last_result.iloc[0, :]
 
     def save_table(self):
-        self._df.to_pickle(self.file_path)
+        try:
+            self._df.to_pickle(self.file_path)
+        except OSError:
+            Path(self.directory).mkdir(parents=True, exist_ok=True)
+            self._df.to_pickle(self.file_path)
