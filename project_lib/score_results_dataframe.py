@@ -99,8 +99,18 @@ class BinaryClassificationModelsScoring:
                 self._last_result.loc[model_name, (level, name)] = round(s, 3)
 
     @property
-    def last_result(self):
-        return self._last_result.copy() if self._last_result is not None else self.new_frame()
+    def last_result(self) -> pd.DataFrame:
+        if self._last_result is None:
+            self._last_result = self.new_frame()
+        return self._last_result.copy()
+
+    @last_result.setter
+    def last_result(self, other: pd.DataFrame):
+        columns: pd.MultiIndex = self.last_result.columns
+        if all(columns == other.columns):
+            self._last_result.loc[other.index[0], :] = other.iloc[0]
+        else:
+            raise ValueError('Table format is not correct')
 
     def dump_last_result(self, new_name: str | None = None):
         if self._last_result is not None:
