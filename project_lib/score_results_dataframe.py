@@ -39,16 +39,18 @@ class BinaryClassificationModelsScoring:
 
         return super().__new__(cls)
 
-    def __init__(self, table_name):
+    def __init__(self, table_name, *, directory='./ScoresTables'):
         self.table_name = table_name
         if table_name in self._instance:
             # Creates results dataframes as singleton
             self._df = self._instance[table_name]
         if not hasattr(self, '_df'):
-            self.file_path = Path(f'{table_name}.pkl')
+            self.file_path = Path(f'{directory}/{table_name}.pkl')
             if self.file_path.is_file():
                 self._df = self.read_frame()
             else:
+                Path(directory).mkdir(
+                    parents=True, exist_ok=True)
                 self._df = self.new_frame()
             self._instance[table_name] = self._df
 
@@ -105,3 +107,6 @@ class BinaryClassificationModelsScoring:
         if self._last_result is not None:
             name = new_name or self._last_result.index[0]
             self._df.loc[name, :] = self._last_result.iloc[0, :]
+
+    def save_table(self):
+        self._df.to_pickle(self.file_path)
